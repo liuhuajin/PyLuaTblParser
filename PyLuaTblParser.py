@@ -5,6 +5,8 @@ class PyLuaTblParser(object):
 		pass
 
 	def load(self, s):
+		if "--[" in s :
+			raise BaseException()
 		index = self.__ignore_space(s, 0)
 		if s[index] != '{':
 			raise TypeError("input type is not table!")
@@ -128,6 +130,8 @@ class PyLuaTblParser(object):
 					value, index = self.__parser_number(s, index)
 				else :
 					result_str, flag, index = self.__pre_parser(s, index)
+					print result_str
+					print s[index]
 					if True == flag :
 						if "true" == result_str:
 							value = True
@@ -141,7 +145,7 @@ class PyLuaTblParser(object):
 						#have key
 						key_flag = True
 						if '=' != s[index] :
-							raise TypeError("no = ")
+							raise BaseException()
 						index = index+1
 						index = self.__ignore_space(s, index)
 						value, index = self.__parser_value(s, index)
@@ -185,13 +189,12 @@ class PyLuaTblParser(object):
 		while  s[end] not in ' \n\r\t=,}-' :
 			end = end + 1
 		result_str = s[start:end]
-		index = self.__ignore_space(s, end)
 		if "true" == result_str or "false" == result_str or "nil" == result_str and "=" != s[index]:
 			# value
-			return result_str, True, index
+			return result_str, True, end
 		else:
 			#key
-			return result_str, False, index
+			return result_str, False, end
 
 	def __parser_content(self, s, index):
 		result_str = s[index:index+3]

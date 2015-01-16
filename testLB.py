@@ -86,13 +86,10 @@ test_str18 = r"""
 """
 test_str19 = """{[1]="value", [2]=nil, [3]="value"}"""
 test_str20 = """{1,2,3,nil,4}"""
-test_str21 = r"""{a --=
---,
-
-
-       					
-    --a
-       	--[[]]=2,
+test_str21 = r"""{
+		3,  
+		2,
+		while_pass=1
        	}"""
 pyt.load(test_str21 )
 #pyt.loadDict(d)	
