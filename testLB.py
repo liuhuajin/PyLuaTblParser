@@ -89,9 +89,12 @@ test_str20 = """{1,2,3,nil,4}"""
 test_str21 = r"""{
 		3,  
 		2,
-		while_pass=1
+		while_pass--a
+		=1
        	}"""
-pyt.load(test_str21 )
+test_str22 = "{}"
+test_str23 = "{['1'] = nil, 'hello', 123, nil, [':['] = nil, 'world'}"
+pyt.load(test_str23 )
 #pyt.loadDict(d)	
 d2 = {
 	1:"as",
@@ -101,8 +104,8 @@ d2 = {
 }
 #pyt.loadDict(d2)
 #print d2
-res = pyt.dump()
-print res
+#res = pyt.dumpDict()
+#print res
 
 #pyt.loadLuaTable("luaTable.txt")
 #d = pyt.dumpDict()

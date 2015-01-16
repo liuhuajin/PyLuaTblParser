@@ -5,13 +5,11 @@ class PyLuaTblParser(object):
 		pass
 
 	def load(self, s):
-		if "--[" in s :
-			raise BaseException()
 		index = self.__ignore_space(s, 0)
 		if s[index] != '{':
 			raise TypeError("input type is not table!")
 		self.__var, index = self.__parser_table(s, index+1)
-
+		print self.__var
 	def dump(self):
 		lua_str = self.__dump_var(self.__var)
 		return lua_str
@@ -130,8 +128,6 @@ class PyLuaTblParser(object):
 					value, index = self.__parser_number(s, index)
 				else :
 					result_str, flag, index = self.__pre_parser(s, index)
-					print result_str
-					print s[index]
 					if True == flag :
 						if "true" == result_str:
 							value = True
@@ -144,17 +140,26 @@ class PyLuaTblParser(object):
 						index = self.__ignore_space(s, index)
 						#have key
 						key_flag = True
-						if '=' != s[index] :
+						while index < len(s) and s[index] != '=':
+							index = index + 1
+						if index == len(s):
 							raise BaseException()
+						#if '=' != s[index] :
+						#	raise BaseException()
 						index = index+1
 						index = self.__ignore_space(s, index)
 						value, index = self.__parser_value(s, index)
+						if key == ':[':
+							if isinstance(value, dict):
+								raise BaseException()
 			if None == key :
 				d[key_index] = value
 				key_index = key_index + 1
 			else :
 				d[key] = value
-		if False == key_flag:
+		if any(d) == False:
+			return d, index
+		elif False == key_flag:
 			#have no key
 			for key in d :
 				l.append(d[key])
@@ -168,7 +173,7 @@ class PyLuaTblParser(object):
 			return r, index
 
 	def __parser_value(self, s, index):
-		number_str = "0123456789+-.eE"
+		number_str = "0123456789+-."
 		if '{' == s[index]:
 			# table
 			value, index = self.__parser_table(s, index+1)
@@ -187,9 +192,10 @@ class PyLuaTblParser(object):
 		start = index
 		end = start
 		while  s[end] not in ' \n\r\t=,}-' :
+		#while s[end] in '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_':
 			end = end + 1
 		result_str = s[start:end]
-		if "true" == result_str or "false" == result_str or "nil" == result_str and "=" != s[index]:
+		if "true" == result_str or "false" == result_str or "nil" == result_str:
 			# value
 			return result_str, True, end
 		else:
