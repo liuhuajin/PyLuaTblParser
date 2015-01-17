@@ -80,7 +80,7 @@ test_str18 = r"""
 	[2] = -12,
 	nil,--dumpLuaTable
 	--array
-	_a2
+	--a2
 	--c
 }
 """
@@ -101,11 +101,18 @@ test_str25 = "{true1=1}"
 test_str26 = r"""{["\"s\""]=2}"""
 test_str27 = r"""{[1]={[2]={a="3",b="4",c='\"s\"'}}}"""
 test_str28 = r"""{a={b="\uabcd\n\r\t'"}}"""
-test_str29 = r"""{a='\"c'}
-"""
-test_str30 = r"""{['/\\"\x08\x0c\n\r\t`1~!@#$%^&*()_+-=[]{}|;:\',./<>?'] = "test"}
-"""
-pyt.load(test_str30)
+test_str29 = r"""{a='\"c'}"""
+test_str30 = r"""{['/\\"\x08\x0c\n\r\t`1~!@#$%^&*()_+-=[]{}|;:\',./<>?'] = "test"}"""
+test_str31 = r"""{1,2 --df
+,"dfdf"}"""
+test_str32 = "{nil,nil,nil}"
+test_str33 = "{a={a={'12\/3','1231'}}}"
+test_str34 = r"""{["1"]=nil,"hello",123,nil,"world"}"""
+test_str35 = "{'c',[1]=2}"
+test_str36 = r"""{["array with nil"] = {nil,nil,[3] = 3.14,nil,nil,key = 183}}"""
+test_str37 = "{1,2,nil,4}"
+test_str38 = "{[1]=1,nil,a=3}"
+pyt.load(test_str38)
 #pyt.loadDict(d)	
 #pyt.loadDict(d2)
 #print d2

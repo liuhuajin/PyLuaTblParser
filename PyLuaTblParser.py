@@ -33,11 +33,16 @@ class PyLuaTblParser(object):
 	def loadDict(self, d):
 		self.__var = {}
 		for key in d:
-			if isinstance(key, int) or isinstance(key, basestring) :
+			if isinstance(key, int) or isinstance(key, basestring) and d[key] != None:
 				self.__var[key] = d[key]
 		
 	def dumpDict(self):
 		d = {}
+		if isinstance(self.__var, list):
+			l = []
+			for v in self.__var:
+				l.append(v)
+			return l
 		for key in self.__var :
 			if isinstance(key, float):
 				key = int(key)
@@ -247,7 +252,8 @@ class PyLuaTblParser(object):
 					end_flag = (begin == s[end_pos])
 			end_pos = end_pos + 1
 		result_str = s[index+1:end_pos-1]
-
+		
+		result_str = result_str.replace("\\/", '/')
 		result_str = result_str.replace("\\'", '\'')
 		result_str = result_str.replace('\\"', "\"")
 		result_str = result_str.replace('\\n', '\n')
