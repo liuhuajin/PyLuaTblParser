@@ -112,7 +112,7 @@ test_str35 = "{'c',[1]=2}"
 test_str36 = r"""{["array with nil"] = {nil,nil,[3] = 3.14,nil,nil,key = 183}}"""
 test_str37 = "{1,2,nil,4}"
 test_str38 = "{[1]=1,nil,a=3}"
-pyt.load(test_str38)
+pyt.load(test_str30)
 #pyt.loadDict(d)	
 #pyt.loadDict(d2)
 #print d2

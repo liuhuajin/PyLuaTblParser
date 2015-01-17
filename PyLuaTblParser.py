@@ -252,11 +252,13 @@ class PyLuaTblParser(object):
 					end_flag = (begin == s[end_pos])
 			end_pos = end_pos + 1
 		result_str = s[index+1:end_pos-1]
-		
+
 		result_str = result_str.replace("\\/", '/')
 		result_str = result_str.replace("\\'", '\'')
 		result_str = result_str.replace('\\"', "\"")
 		result_str = result_str.replace('\\n', '\n')
+		result_str = result_str.replace('\\a', '\a')
+		result_str = result_str.replace('\\v', '\v')
 		result_str = result_str.replace('\\t', '\t')
 		result_str = result_str.replace('\\r', '\r')
 		result_str = result_str.replace('\\b', '\b')
