@@ -6,10 +6,20 @@ class PyLuaTblParser(object):
 
 	def load(self, s):
 		index = self.__ignore_space(s, 0)
+		s = s.replace('\\/', '/')
+		s = s.replace("\\'", "\'")
+		s = s.replace('\\"', '\"')
+		s = s.replace('\\n', '\n')
+		s = s.replace('\\t', '\t')
+		s = s.replace('\\r', '\r')
+		s = s.replace('\\b', '\b')
+		s = s.replace('\\f', '\f')
+		s = s.replace('\\\\', '\\')		
 		if s[index] != '{':
 			raise TypeError("input type is not table!")
 		self.__var, index = self.__parser_table(s, index+1)
 		print self.__var
+
 	def dump(self):
 		lua_str = self.__dump_var(self.__var)
 		return lua_str
@@ -112,7 +122,7 @@ class PyLuaTblParser(object):
 					index = self.__ignore_space(s, index)
 					value, index = self.__parser_value(s, index)
 
-			elif ',' == s[index] :
+			elif ',' == s[index] or ';' == s[index]:
 				index = self.__ignore_space(s, index+1)
 				continue
 			else :
@@ -144,15 +154,13 @@ class PyLuaTblParser(object):
 							index = index + 1
 						if index == len(s):
 							raise BaseException()
-						#if '=' != s[index] :
-						#	raise BaseException()
+						if '=' != s[index] :
+							raise BaseException()
 						index = index+1
 						index = self.__ignore_space(s, index)
 						value, index = self.__parser_value(s, index)
-						if key == ':[':
-							if isinstance(value, dict):
-								raise BaseException()
 			if None == key :
+				key = key_index
 				d[key_index] = value
 				key_index = key_index + 1
 			else :
@@ -191,8 +199,8 @@ class PyLuaTblParser(object):
 	def __pre_parser(self, s, index):
 		start = index
 		end = start
-		while  s[end] not in ' \n\r\t=,}-' :
-		#while s[end] in '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_':
+		#while  s[end] not in ' \n\r\t=,}-' :
+		while s[end] in '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_':
 			end = end + 1
 		result_str = s[start:end]
 		if "true" == result_str or "false" == result_str or "nil" == result_str:
@@ -203,6 +211,7 @@ class PyLuaTblParser(object):
 			return result_str, False, end
 
 	def __parser_content(self, s, index):
+		
 		result_str = s[index:index+3]
 		if result_str == 'nil' :
 			return None, index+3
@@ -213,6 +222,8 @@ class PyLuaTblParser(object):
 		if result_str == 'false' :
 			return False, index+5
 		else :
+			if s[index] in "={\"\'":
+				raise BaseException()
 			raise TypeError("content is not nil true false")
 
 	def __parser_key(self, s, index):
@@ -245,8 +256,8 @@ class PyLuaTblParser(object):
 			end_pos = end_pos + 1
 		result_str = s[index+1:end_pos-1]
 		
-		while -1 != result_str.find("\u") :
-			i = result_str.find("\u")
+		while -1 != result_str.find("\\u") :
+			i = result_str.find("\\u")
 			str_unicode = result_str[i:i+6]
 			result_str = result_str.replace(str_unicode, str_unicode[1:])
 		
@@ -263,10 +274,8 @@ class PyLuaTblParser(object):
 			index = index + 1
 		result = s[start:index]
 		number = string.atof(result)
-		#if '.' in result :
-		#	number = string.atof(result)
-		#else:
-		#	number = string.atol(result)
+		if float(int(number)) == number:
+			number = int(number)
 		return (number, index)
 
 	def __ignore_space(self, s, index):

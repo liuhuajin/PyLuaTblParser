@@ -94,18 +94,19 @@ test_str21 = r"""{
        	}"""
 test_str22 = "{}"
 test_str23 = "{['1'] = nil, 'hello', 123, nil, [':['] = nil, 'world'}"
-pyt.load(test_str23 )
+test_str24 = r"""{[1]="i am \n
+ok"}
+"""
+test_str25 = "{true1=1}"
+test_str26 = r"""{["\"s\""]=2}"""
+test_str27 = r"""{[1]={[2]={a="3",b="4",c='\"s\"'}}}"""
+test_str28 = """{a={b=nil}}"""
+pyt.load(test_str28)
 #pyt.loadDict(d)	
-d2 = {
-	1:"as",
-	2:"bf",
-	3:4,
-	"af":3,
-}
 #pyt.loadDict(d2)
 #print d2
-#res = pyt.dumpDict()
-#print res
+res = pyt.dumpDict()
+print res
 
 #pyt.loadLuaTable("luaTable.txt")
 #d = pyt.dumpDict()
