@@ -100,8 +100,12 @@ ok"}
 test_str25 = "{true1=1}"
 test_str26 = r"""{["\"s\""]=2}"""
 test_str27 = r"""{[1]={[2]={a="3",b="4",c='\"s\"'}}}"""
-test_str28 = r"""{a={b="\uabcd\n\r\t"}}"""
-pyt.load(test_str28)
+test_str28 = r"""{a={b="\uabcd\n\r\t'"}}"""
+test_str29 = r"""{a='\"c'}
+"""
+test_str30 = r"""{['/\\"\x08\x0c\n\r\t`1~!@#$%^&*()_+-=[]{}|;:\',./<>?'] = "test"}
+"""
+pyt.load(test_str30)
 #pyt.loadDict(d)	
 #pyt.loadDict(d2)
 #print d2

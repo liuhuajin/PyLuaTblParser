@@ -6,14 +6,7 @@ class PyLuaTblParser(object):
 
 	def load(self, s):
 		index = self.__ignore_space(s, 0)
-		s = s.replace("\\'", "\'")
-		s = s.replace('\\"', '\"')
-		s = s.replace('\\n', '\n')
-		s = s.replace('\\t', '\t')
-		s = s.replace('\\r', '\r')
-		s = s.replace('\\b', '\b')
-		s = s.replace('\\f', '\f')
-		s = s.replace('\\\\', '\\')		
+		
 		if s[index] != '{':
 			raise TypeError("input type is not table!")
 		self.__var, index = self.__parser_table(s, index+1)
@@ -254,12 +247,25 @@ class PyLuaTblParser(object):
 					end_flag = (begin == s[end_pos])
 			end_pos = end_pos + 1
 		result_str = s[index+1:end_pos-1]
-		
+
+		result_str = result_str.replace("\\'", '\'')
+		result_str = result_str.replace('\\"', "\"")
+		result_str = result_str.replace('\\n', '\n')
+		result_str = result_str.replace('\\t', '\t')
+		result_str = result_str.replace('\\r', '\r')
+		result_str = result_str.replace('\\b', '\b')
+		result_str = result_str.replace('\\f', '\f')
+		result_str = result_str.replace('\\\\', '\\')
+		result_str = result_str.replace('\\u', 'u')
+		result_str = result_str.replace('\\x', 'x')
+
+		"""
 		while -1 != result_str.find("\\u") :
 			i = result_str.find("\\u")
 			str_unicode = result_str[i:i+6]
 			result_str = result_str.replace(str_unicode, str_unicode[1:])
-		
+		"""
+
 		return (result_str, end_pos)
 
 	def __parser_number(self, s, index):
@@ -287,7 +293,8 @@ class PyLuaTblParser(object):
 				index += 1
 			if index+1 < str_len and '-' == s[index] and '-' == s[index+1]:
 				index = index+2
-				while '\n' != s[index] and index < str_len:
+				# ????????????  \n   \r      ????
+				while '\n' != s[index] and '\r' != s[index] and index < str_len:
 					index = index+1
 			if orgin == index:
 				break
