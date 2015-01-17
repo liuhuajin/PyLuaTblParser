@@ -100,7 +100,7 @@ ok"}
 test_str25 = "{true1=1}"
 test_str26 = r"""{["\"s\""]=2}"""
 test_str27 = r"""{[1]={[2]={a="3",b="4",c='\"s\"'}}}"""
-test_str28 = """{a={b=nil}}"""
+test_str28 = r"""{a={b="\uabcd\n\r\t"}}"""
 pyt.load(test_str28)
 #pyt.loadDict(d)	
 #pyt.loadDict(d2)

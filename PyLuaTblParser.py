@@ -6,7 +6,6 @@ class PyLuaTblParser(object):
 
 	def load(self, s):
 		index = self.__ignore_space(s, 0)
-		s = s.replace('\\/', '/')
 		s = s.replace("\\'", "\'")
 		s = s.replace('\\"', '\"')
 		s = s.replace('\\n', '\n')
@@ -222,7 +221,7 @@ class PyLuaTblParser(object):
 		if result_str == 'false' :
 			return False, index+5
 		else :
-			if s[index] in "={\"\'":
+			if s[index] in "={\"\';":
 				raise BaseException()
 			raise TypeError("content is not nil true false")
 
