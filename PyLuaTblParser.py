@@ -5,12 +5,11 @@ class PyLuaTblParser(object):
 		pass
 
 	def load(self, s):
-		index = self.__ignore_space(s, 0)
-		
+		print s
+		index = self.__ignore_space(s, 0)		
 		if s[index] != '{':
 			raise TypeError("input type is not table!")
 		self.__var, index = self.__parser_table(s, index+1)
-		print self.__var
 
 	def dump(self):
 		lua_str = self.__dump_var(self.__var)
@@ -19,8 +18,7 @@ class PyLuaTblParser(object):
 	def loadLuaTable(self, f):
 		f = open(f, 'r')
 		text = f.read()
-		text.decode()
-		text.encode('utf-8')
+		print text
 		self.load(text)
 		f.close()
 
@@ -33,7 +31,7 @@ class PyLuaTblParser(object):
 	def loadDict(self, d):
 		self.__var = {}
 		for key in d:
-			if isinstance(key, int) or isinstance(key, basestring) and d[key] != None:
+			if isinstance(key, long) or isinstance(key, int) or isinstance(key, basestring) and d[key] != None:
 				self.__var[key] = d[key]
 		
 	def dumpDict(self):
@@ -49,6 +47,16 @@ class PyLuaTblParser(object):
 			d[key] = self.__var[key]
 		return d
 
+	def __translate(self, s):		
+		s=s.replace("\\", "\\\\")
+		s=s.replace("'", "\\'")
+		s=s.replace('"', '\\"')
+		s=s.replace("\b", "\\b")
+		s=s.replace("\f", "\\f")
+		s=s.replace("\n", "\\n")
+		s=s.replace("\r", "\\r")
+		s=s.replace("\t", "\\t")
+		return s
 	def __dump_var(self, var):
 		result_str = ""
 		if isinstance(var, list):
@@ -56,6 +64,7 @@ class PyLuaTblParser(object):
 				if isinstance(value, list) or isinstance(value, dict) :
 					result_str = result_str + self.__dump_var(value) + ","
 				elif isinstance(value, basestring):
+					result_str = self.__translate(result_str)
 					result_str = result_str + "'" + value + "',"
 				elif isinstance(value, bool) and value == True :
 					result_str = result_str + "true,"
@@ -68,14 +77,17 @@ class PyLuaTblParser(object):
 			result_str = '{' + result_str + '}'
 		else:
 			for key in var:
-				if isinstance(key, float) or isinstance(key, int):
-					result_str = result_str + '[' + str(int(key)) + ']='
-				else:
-					result_str = result_str + '["' + key + '"]='
 				value = var[key]
+				if isinstance(key, float) or isinstance(key, int) or isinstance(key, long):
+					result_str = result_str + '[' + str(key) + ']='
+				else:
+					key_str = key
+					key_str = self.__translate(key_str)
+					result_str = result_str + '["' + key_str + '"]='
 				if isinstance(value, list) or isinstance(value, dict) :
 					result_str = result_str + self.__dump_var(value) + ","
 				elif isinstance(value, basestring):
+					value = self.__translate(value)
 					result_str = result_str + "'" + value + "',"
 				elif isinstance(value, bool) and value == True :
 					result_str = result_str + "true,"
@@ -92,7 +104,7 @@ class PyLuaTblParser(object):
 		index = self.__ignore_space(s, index)
 		number_str = "0123456789+-.eE"
 		number_begin = "+-.0123456789"
-		key_index = 1
+		key_index = 0
 		key_flag = False
 		d = {}
 		l =[]
@@ -157,11 +169,15 @@ class PyLuaTblParser(object):
 						index = self.__ignore_space(s, index)
 						value, index = self.__parser_value(s, index)
 			if None == key :
-				key = key_index
-				d[key_index] = value
+				key = key_index+1
+				d[key] = value
 				key_index = key_index + 1
 			else :
-				d[key] = value
+				if isinstance(key, int):
+					if key > key_index:
+						d[key] = value
+				else:
+					d[key] = value
 		if any(d) == False:
 			return d, index
 		elif False == key_flag:
@@ -230,10 +246,11 @@ class PyLuaTblParser(object):
 		if '"' == s[index] or "'" == s[index]:
 			#string
 			result, index = self.__parser_string(s, index)
-		elif number_str.find(s[index]) != -1:
+			return result, index
+		else:
 			#number
 			result, index = self.__parser_number(s, index)
-		return result, index
+			return result, index
 
 	def __parser_string(self, s, index):
 		begin = s[index]
@@ -254,8 +271,8 @@ class PyLuaTblParser(object):
 		result_str = s[index+1:end_pos-1]
 
 		result_str = result_str.replace("\\/", '/')
-		result_str = result_str.replace("\\'", '\'')
-		result_str = result_str.replace('\\"', "\"")
+		result_str = result_str.replace('\\"', '"')
+		result_str = result_str.replace("\\'", "'")
 		result_str = result_str.replace('\\n', '\n')
 		result_str = result_str.replace('\\a', '\a')
 		result_str = result_str.replace('\\v', '\v')
@@ -266,13 +283,6 @@ class PyLuaTblParser(object):
 		result_str = result_str.replace('\\\\', '\\')
 		result_str = result_str.replace('\\u', 'u')
 		result_str = result_str.replace('\\x', 'x')
-
-		"""
-		while -1 != result_str.find("\\u") :
-			i = result_str.find("\\u")
-			str_unicode = result_str[i:i+6]
-			result_str = result_str.replace(str_unicode, str_unicode[1:])
-		"""
 
 		return (result_str, end_pos)
 
@@ -286,7 +296,7 @@ class PyLuaTblParser(object):
 				break
 			index = index + 1
 		result = s[start:index]
-		number = string.atof(result)
+		number = float(result)
 		if float(int(number)) == number:
 			number = int(number)
 		return (number, index)
